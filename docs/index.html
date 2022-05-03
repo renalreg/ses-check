@@ -14,12 +14,14 @@
 
 <body>
     <div x-data="{ 
+            fetchDone: false,
             orgs: {}, 
             aliases: {
                 'renalregistry.nhs.uk': 'nbt.nhs.uk'
             },
             async init() {
                 this.orgs = await (await fetch('./orgs.json')).json();
+                this.fetchDone = true;
             },
             toAddress: '', 
             toDomain: '', 
@@ -48,47 +50,55 @@
             },
         }" class="mx-4 my-4">
 
-        <div class="input-group mb-3 gx-5 row">
-            <div class="col-md-6 col">
-                <label for="fromAddressInput" class="form-label"> I'm sending from </label>
-                <input id="fromAddressInput" name="fromAddressInput" type="email" autocomplete="email"
-                    placeholder="my.name@example.org" x-model="fromAddress" x-on:change.debounce="setFromDomain"
-                    class="form-control">
-            </div>
-
-            <div class="col-md-6 col">
-                <label for="toAddressInput" class="form-label"> I'm sending from </label>
-                <input id="toAddressInput" name="toAddressInput" type="email" autocomplete="email"
-                    placeholder="their.name@example.nhs.uk" x-model="toAddress" x-on:change.debounce="setToDomain"
-                    class="form-control">
-            </div>
-            <div class="col-12"><button x-on:click="setFromDomain(); setToDomain()" class="btn btn-primary mt-4">Am I Secure?</button></div>
-            
+        <div x-show="!fetchDone" class="text-center">
+            <div>Loading organizations...</div>
         </div>
+        <div x-show="fetchDone" class="container">
+            <div class="input-group mb-3 gx-5 row">
+                <div class="col-md-6 col">
+                    <label for="fromAddressInput" class="form-label"> I'm sending from </label>
+                    <input id="fromAddressInput" name="fromAddressInput" type="email" autocomplete="email"
+                        placeholder="my.name@example.org" x-model="fromAddress" x-on:change.debounce="setFromDomain"
+                        class="form-control">
+                </div>
 
-        <div x-show="toDomain && fromDomain">
-            <!-- NHSMail to secure recipient -->
-            <div x-show="fromIsNHSMail && toIsSecure">
-                Sending from NHSMail to <span x-text="toDomain"></span> is secure. No special action is needed.
+                <div class="col-md-6 col">
+                    <label for="toAddressInput" class="form-label"> I'm sending from </label>
+                    <input id="toAddressInput" name="toAddressInput" type="email" autocomplete="email"
+                        placeholder="their.name@example.nhs.uk" x-model="toAddress" x-on:change.debounce="setToDomain"
+                        class="form-control">
+                </div>
+                <div class="col-12"><button x-on:click="setFromDomain(); setToDomain()" class="btn btn-primary mt-4">Am
+                        I Secure?</button></div>
+
             </div>
 
-            <!-- Non-NHSMail secure sender to secure recipient -->
-            <div x-show="!fromIsNHSMail && fromIsSecure && toIsSecure">
-                Sending from <span x-text="fromDomain"></span> to <span x-text="toDomain"></span> is secure. No special
-                action is needed.
-            </div>
+            <div x-show="toDomain && fromDomain">
+                <!-- NHSMail to secure recipient -->
+                <div x-show="fromIsNHSMail && toIsSecure">
+                    Sending from NHSMail to <span x-text="toDomain"></span> is secure. No special action is needed.
+                </div>
 
-            <!-- Non-NHSMail secure sender to insecure recipient -->
-            <div x-show="!fromIsNHSMail && fromIsSecure && !toIsSecure">
-                <p>Sending from <span x-text="fromDomain"></span> to <span x-text="toDomain"></span> may not be secure.
-                </p>
-                <p>You MUST include [secure] in your message subject!</p>
-            </div>
+                <!-- Non-NHSMail secure sender to secure recipient -->
+                <div x-show="!fromIsNHSMail && fromIsSecure && toIsSecure">
+                    Sending from <span x-text="fromDomain"></span> to <span x-text="toDomain"></span> is secure. No
+                    special
+                    action is needed.
+                </div>
 
-            <!-- Insecure sender to anyone -->
-            <div x-show="!fromIsSecure">
-                <p>Sending from <span x-text="fromDomain"></span> is insecure.</p>
-                <p>You must NOT send sensitive information from this email address!</p>
+                <!-- Non-NHSMail secure sender to insecure recipient -->
+                <div x-show="!fromIsNHSMail && fromIsSecure && !toIsSecure">
+                    <p>Sending from <span x-text="fromDomain"></span> to <span x-text="toDomain"></span> may not be
+                        secure.
+                    </p>
+                    <p>You MUST include [secure] in your message subject!</p>
+                </div>
+
+                <!-- Insecure sender to anyone -->
+                <div x-show="!fromIsSecure">
+                    <p>Sending from <span x-text="fromDomain"></span> is insecure.</p>
+                    <p>You must NOT send sensitive information from this email address!</p>
+                </div>
             </div>
         </div>
     </div>
