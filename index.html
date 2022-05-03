@@ -10,56 +10,61 @@
 </head>
 
 <script>
+    const appData = {
+        fetchDone: false,
+        orgs: {},
+        aliases: {
+            'renalregistry.nhs.uk': 'nbt.nhs.uk'
+        },
+        async init() {
+            this.orgs = await (await fetch('./orgs.json')).json();
+            this.fetchDone = true;
+        },
+        toAddress: '',
+        toDomain: '',
+        fromAddress: '',
+        fromDomain: '',
+        setFromDomain() {
+            this.fromDomain = this.fromAddress.split('@').pop()
+        },
+        setToDomain() {
+            this.toDomain = this.toAddress.split('@').pop()
+        },
+        get toIsSecure() {
+            return (this.toDomain in this.orgs) || (this.toDomain in this.aliases && this.aliases[this
+                .toDomain] in this.orgs)
+        },
+        get fromIsSecure() {
+            return (this.fromDomain in this.orgs) || (this.fromDomain in this.aliases && this.aliases[this
+                .fromDomain] in this.orgs)
+        },
+        get fromIsNHSMail() {
+            return this.fromDomain === 'nhs.net'
+        },
+        get fromIsNHSUK() {
+            return this.fromDomain.includes('.nhs.uk')
+        },
+        get toIsNHSUK() {
+            return this.toDomain.includes('.nhs.uk')
+        },
+    }
 </script>
 
 <body>
-    <div x-data="{ 
-            fetchDone: false,
-            orgs: {}, 
-            aliases: {
-                'renalregistry.nhs.uk': 'nbt.nhs.uk'
-            },
-            async init() {
-                this.orgs = await (await fetch('./orgs.json')).json();
-                this.fetchDone = true;
-            },
-            toAddress: '', 
-            toDomain: '', 
-            fromAddress: '', 
-            fromDomain: '', 
-            setFromDomain() {
-                this.fromDomain = this.fromAddress.split('@').pop()
-            },
-            setToDomain() {
-                this.toDomain = this.toAddress.split('@').pop()
-            },
-            get toIsSecure() {
-                return (this.toDomain in this.orgs) || (this.toDomain in this.aliases && this.aliases[this.toDomain] in this.orgs)
-            },
-            get fromIsSecure() {
-                return (this.fromDomain in this.orgs) || (this.fromDomain in this.aliases && this.aliases[this.fromDomain] in this.orgs)
-            },
-            get fromIsNHSMail() {
-                return this.fromDomain === 'nhs.net'
-            },
-            get fromIsNHSUK() {
-                return this.fromDomain.includes('.nhs.uk')
-            },
-            get toIsNHSUK() {
-                return this.toDomain.includes('.nhs.uk')
-            },
-        }" class="mx-4 my-4">
+    <div x-data="appData" class="mx-4 my-4">
 
         <div class="mb-4">
             <h2 class="mx-6">(Unofficial) NHS Secure Email Standard Checker</h2>
-            <p>A little web utility to check <a href="https://digital.nhs.uk/services/nhsmail/the-secure-email-standard">NHS Secure Email Standard</a> reccommendations.</p>
+            <p>A little web utility to check <a
+                    href="https://digital.nhs.uk/services/nhsmail/the-secure-email-standard">NHS Secure Email
+                    Standard</a> reccommendations.</p>
         </div>
-        
 
         <div x-show="!fetchDone" class="text-center">
             <div>Loading organizations...</div>
         </div>
-        <div x-show="fetchDone" >
+
+        <div x-show="fetchDone">
             <div class="input-group mb-3 gx-5 row">
                 <div class="col-md-6 col-12 col">
                     <label for="fromAddressInput" class="form-label"> I'm sending from </label>
@@ -76,7 +81,6 @@
                 </div>
                 <div class="col-12"><button x-on:click="setFromDomain(); setToDomain()" class="btn btn-primary mt-4">Am
                         I Secure?</button></div>
-
             </div>
 
             <div x-show="toDomain && fromDomain">
@@ -94,7 +98,7 @@
                 <!-- Any secure sender to insecure recipient -->
                 <div x-show="fromIsSecure && !toIsSecure" class="alert alert-warning" role="alert">
                     <p>
-                        Sending from <span x-text="fromDomain"></span> to <span x-text="toDomain"></span> 
+                        Sending from <span x-text="fromDomain"></span> to <span x-text="toDomain"></span>
                         may not be secure.
                     </p>
                     <p>You <b>must</b> include <tt>[secure]</tt> in your message subject!</p>
@@ -109,7 +113,5 @@
         </div>
     </div>
 </body>
-
-
 
 </html>
