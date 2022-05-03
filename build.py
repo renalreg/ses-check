@@ -24,5 +24,5 @@ for row in df.itertuples():
 
     orgs[row[3].strip().lower()] = d
 
-with open("html/orgs.json", "w") as f:
+with open("docs/orgs.json", "w") as f:
     json.dump(orgs, f)
