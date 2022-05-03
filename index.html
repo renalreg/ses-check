@@ -75,29 +75,29 @@
 
             <div x-show="toDomain && fromDomain">
                 <!-- NHSMail to secure recipient -->
-                <div x-show="fromIsNHSMail && toIsSecure">
+                <div x-show="fromIsNHSMail && toIsSecure" class="alert alert-success" role="alert">
                     Sending from NHSMail to <span x-text="toDomain"></span> is secure. No special action is needed.
                 </div>
 
                 <!-- Non-NHSMail secure sender to secure recipient -->
-                <div x-show="!fromIsNHSMail && fromIsSecure && toIsSecure">
-                    Sending from <span x-text="fromDomain"></span> to <span x-text="toDomain"></span> is secure. No
-                    special
-                    action is needed.
+                <div x-show="!fromIsNHSMail && fromIsSecure && toIsSecure" class="alert alert-success" role="alert">
+                    Sending from <span x-text="fromDomain"></span> to <span x-text="toDomain"></span> is secure.
+                    No special action is needed.
                 </div>
 
-                <!-- Non-NHSMail secure sender to insecure recipient -->
-                <div x-show="!fromIsNHSMail && fromIsSecure && !toIsSecure">
-                    <p>Sending from <span x-text="fromDomain"></span> to <span x-text="toDomain"></span> may not be
-                        secure.
+                <!-- Any secure sender to insecure recipient -->
+                <div x-show="fromIsSecure && !toIsSecure" class="alert alert-warning" role="alert">
+                    <p>
+                        Sending from <span x-text="fromDomain"></span> to <span x-text="toDomain"></span> 
+                        may not be secure.
                     </p>
-                    <p>You MUST include [secure] in your message subject!</p>
+                    <p>You <b>must</b> include <tt>[secure]</tt> in your message subject!</p>
                 </div>
 
                 <!-- Insecure sender to anyone -->
-                <div x-show="!fromIsSecure">
+                <div x-show="!fromIsSecure" class="alert alert-danger" role="alert">
                     <p>Sending from <span x-text="fromDomain"></span> is insecure.</p>
-                    <p>You must NOT send sensitive information from this email address!</p>
+                    <p>You must <b>not</b> send sensitive information from this email address!</p>
                 </div>
             </div>
         </div>
