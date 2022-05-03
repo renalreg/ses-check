@@ -1,0 +1,99 @@
+<html>
+
+<head>
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous">
+    </script>
+</head>
+
+<script>
+</script>
+
+<body>
+    <div x-data="{ 
+            orgs: {}, 
+            aliases: {
+                'renalregistry.nhs.uk': 'nbt.nhs.uk'
+            },
+            async init() {
+                this.orgs = await (await fetch('./orgs.json')).json();
+            },
+            toAddress: '', 
+            toDomain: '', 
+            fromAddress: '', 
+            fromDomain: '', 
+            setFromDomain() {
+                this.fromDomain = this.fromAddress.split('@').pop()
+            },
+            setToDomain() {
+                this.toDomain = this.toAddress.split('@').pop()
+            },
+            get toIsSecure() {
+                return (this.toDomain in this.orgs) || (this.toDomain in this.aliases && this.aliases[this.toDomain] in this.orgs)
+            },
+            get fromIsSecure() {
+                return (this.fromDomain in this.orgs) || (this.fromDomain in this.aliases && this.aliases[this.fromDomain] in this.orgs)
+            },
+            get fromIsNHSMail() {
+                return this.fromDomain === 'nhs.net'
+            },
+            get fromIsNHSUK() {
+                return this.fromDomain.includes('.nhs.uk')
+            },
+            get toIsNHSUK() {
+                return this.toDomain.includes('.nhs.uk')
+            },
+        }" class="mx-4 my-4">
+
+        <div class="input-group mb-3 gx-5 row">
+            <div class="col-md-6 col">
+                <label for="fromAddressInput" class="form-label"> I'm sending from </label>
+                <input id="fromAddressInput" name="fromAddressInput" type="email" autocomplete="email"
+                    placeholder="my.name@example.org" x-model="fromAddress" x-on:change.debounce="setFromDomain"
+                    class="form-control">
+            </div>
+
+            <div class="col-md-6 col">
+                <label for="toAddressInput" class="form-label"> I'm sending from </label>
+                <input id="toAddressInput" name="toAddressInput" type="email" autocomplete="email"
+                    placeholder="their.name@example.nhs.uk" x-model="toAddress" x-on:change.debounce="setToDomain"
+                    class="form-control">
+            </div>
+            <div class="col-12"><button x-on:click="setFromDomain(); setToDomain()" class="btn btn-primary mt-4">Am I Secure?</button></div>
+            
+        </div>
+
+        <div x-show="toDomain && fromDomain">
+            <!-- NHSMail to secure recipient -->
+            <div x-show="fromIsNHSMail && toIsSecure">
+                Sending from NHSMail to <span x-text="toDomain"></span> is secure. No special action is needed.
+            </div>
+
+            <!-- Non-NHSMail secure sender to secure recipient -->
+            <div x-show="!fromIsNHSMail && fromIsSecure && toIsSecure">
+                Sending from <span x-text="fromDomain"></span> to <span x-text="toDomain"></span> is secure. No special
+                action is needed.
+            </div>
+
+            <!-- Non-NHSMail secure sender to insecure recipient -->
+            <div x-show="!fromIsNHSMail && fromIsSecure && !toIsSecure">
+                <p>Sending from <span x-text="fromDomain"></span> to <span x-text="toDomain"></span> may not be secure.
+                </p>
+                <p>You MUST include [secure] in your message subject!</p>
+            </div>
+
+            <!-- Insecure sender to anyone -->
+            <div x-show="!fromIsSecure">
+                <p>Sending from <span x-text="fromDomain"></span> is insecure.</p>
+                <p>You must NOT send sensitive information from this email address!</p>
+            </div>
+        </div>
+    </div>
+</body>
+
+
+
+</html>
