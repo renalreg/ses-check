@@ -50,19 +50,25 @@
             },
         }" class="mx-4 my-4">
 
+        <div class="mb-4">
+            <h2 class="mx-6">(Unofficial) NHS Secure Email Standard Checker</h2>
+            <p>A little web utility to check <a href="https://digital.nhs.uk/services/nhsmail/the-secure-email-standard">NHS Secure Email Standard</a> reccommendations.</p>
+        </div>
+        
+
         <div x-show="!fetchDone" class="text-center">
             <div>Loading organizations...</div>
         </div>
-        <div x-show="fetchDone" class="container">
+        <div x-show="fetchDone" >
             <div class="input-group mb-3 gx-5 row">
-                <div class="col-md-6 col">
+                <div class="col-md-6 col-12 col">
                     <label for="fromAddressInput" class="form-label"> I'm sending from </label>
                     <input id="fromAddressInput" name="fromAddressInput" type="email" autocomplete="email"
                         placeholder="my.name@example.org" x-model="fromAddress" x-on:change.debounce="setFromDomain"
                         class="form-control">
                 </div>
 
-                <div class="col-md-6 col">
+                <div class="col-md-6 col-12 col">
                     <label for="toAddressInput" class="form-label"> I'm sending from </label>
                     <input id="toAddressInput" name="toAddressInput" type="email" autocomplete="email"
                         placeholder="their.name@example.nhs.uk" x-model="toAddress" x-on:change.debounce="setToDomain"
