@@ -1,6 +1,8 @@
 # SES Check
 
-Web utility to check NHS Secure Email Standard reccommendations
+Web utility to check NHS Secure Email Standard reccommendations.
+
+[View the live web utility](https://renalreg.github.io/ses-check/)
 
 ## How it works
 
