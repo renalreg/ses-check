@@ -28,7 +28,7 @@ with closing(requests.get(URL, stream=True)) as r:
             "tls12": row[7] == "Y",
         }
 
-        orgs[row[3].strip().lower()] = d
+        orgs[row[2].strip().lower()] = d
 
 with open("orgs.json", "w", encoding="utf-8") as f:
     json.dump(orgs, f)
