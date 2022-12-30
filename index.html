@@ -44,7 +44,7 @@
         get toIsNHSMail() {
             return this.toDomain === 'nhs.net'
         },
-        get notNHSMail() {
+        get neitherNHSMail() {
             return !this.fromIsNHSMail && !this.toIsNHSMail
         }
     }
@@ -104,20 +104,19 @@
                 </div>
 
                 <!-- Secure sender (including NHSMail) to insecure recipient, or between any 2 non-NHSMail secure domains -->
-                <div x-show="(fromIsSecure && !toIsSecure) || (notNHSMail && fromIsSecure && toIsSecure)"
+                <div x-show="(fromIsSecure && !toIsSecure) || (neitherNHSMail && fromIsSecure && toIsSecure)"
                     class="alert alert-warning" role="alert">
                     <p>
                         Sending from <span x-text="fromDomain"></span> to <span x-text="toDomain"></span>
                         may not be encrypted by default.
                     </p>
                     <p>You <b>must</b> include <tt>[secure]</tt> in your message subject, or <a
-                            href="https://support.microsoft.com/en-us/office/encrypt-email-messages-373339cb-bf1a-4509-b296-802a39d801dc">use
-                            the Encrypt button in
-                            Outlook.</a></p>
+                            href="https://support.microsoft.com/en-us/office/encrypt-email-messages-373339cb-bf1a-4509-b296-802a39d801dc">
+                            use the Encrypt button in Outlook.</a></p>
                 </div>
 
                 <!-- Insecure sender to anyone -->
-                <div x-show="!fromIsSecure || !toIsSecure" class="alert alert-danger" role="alert">
+                <div x-show="!fromIsSecure" class="alert alert-danger" role="alert">
                     <p>Sending from <span x-text="fromDomain"></span> to <span x-text="toDomain"></span> is insecure by
                         default.</p>
                     <p>You should <b>not</b> send sensitive information between these email addresses.</p>
