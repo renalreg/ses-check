@@ -3,10 +3,7 @@ import json
 from contextlib import closing
 import requests
 
-# Ok so super cool thing, NHS Digital have decided to keep the URL looking like an XLSX file, but it actually downloads a CSV file.
-# The HTTP response downloads the file with a filename "dcb1596_accredited_domains.csv".
-# Furthermore, it's full of non-UTF-8 characters, I assume because the file is being lazily converted from Excel to CSV
-URL = "https://digital.nhs.uk/binaries/content/assets/website-assets/services/nhs-mail/secure-email-standard/dcb1596_accredited_domains.xlsx"
+URL = "https://nhs-prod.global.ssl.fastly.net/binaries/content/assets/website-assets/services/nhs-mail/secure-email-standard/dcb1596_accredited_domains.csv"
 
 orgs = {}
 
