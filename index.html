@@ -6,7 +6,7 @@
         integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous">
-    </script>
+        </script>
 </head>
 
 <script>
@@ -41,12 +41,12 @@
         get fromIsNHSMail() {
             return this.fromDomain === 'nhs.net'
         },
-        get fromIsNHSUK() {
-            return this.fromDomain.includes('.nhs.uk')
+        get toIsNHSMail() {
+            return this.toDomain === 'nhs.net'
         },
-        get toIsNHSUK() {
-            return this.toDomain.includes('.nhs.uk')
-        },
+        get notNHSMail() {
+            return !this.fromIsNHSMail && !this.toIsNHSMail
+        }
     }
 </script>
 
@@ -58,8 +58,10 @@
             <p>A little web utility to check <a
                     href="https://digital.nhs.uk/services/nhsmail/the-secure-email-standard">NHS Secure Email
                     Standard</a> reccommendations.</p>
-            <p><i>This utility currently relies on the authors best understanding of the NHS Digital Secure Email Standard, and may not be accurate.<br>
-            The tool will be updated as our understanding of the standard develops. Full source code is available <a href="https://github.com/renalreg/ses-check">on GitHub.</a></i></p>
+            <p><i>This utility currently relies on the authors best understanding of the NHS Digital Secure Email
+                    Standard, and may not be accurate.<br>
+                    The tool will be updated as our understanding of the standard develops. Full source code is
+                    available <a href="https://github.com/renalreg/ses-check">on GitHub.</a></i></p>
         </div>
 
         <div x-show="!fetchDone" class="text-center">
@@ -86,30 +88,39 @@
             </div>
 
             <div x-show="toDomain && fromDomain">
+                <!-- NHSMail to NHSMail -->
+                <div x-show="fromIsNHSMail && toIsNHSMail" class="alert alert-success" role="alert">
+                    Sending within NHSMail is secure. No special action is needed.
+                </div>
+
                 <!-- NHSMail to secure recipient -->
-                <div x-show="fromIsNHSMail && toIsSecure" class="alert alert-success" role="alert">
+                <div x-show="fromIsNHSMail && toIsSecure && !toIsNHSMail" class="alert alert-success" role="alert">
                     Sending from NHSMail to <span x-text="toDomain"></span> is secure. No special action is needed.
                 </div>
 
-                <!-- Non-NHSMail secure sender to secure recipient -->
-                <div x-show="!fromIsNHSMail && fromIsSecure && toIsSecure" class="alert alert-success" role="alert">
-                    Sending from <span x-text="fromDomain"></span> to <span x-text="toDomain"></span> is secure.
-                    No special action is needed.
+                <!-- Secure sender to NHSMail -->
+                <div x-show="toIsNHSMail && fromIsSecure && !fromIsNHSMail" class="alert alert-success" role="alert">
+                    Sending to NHSMail from <span x-text="fromDomain"></span> is secure. No special action is needed.
                 </div>
 
-                <!-- Any secure sender to insecure recipient -->
-                <div x-show="fromIsSecure && !toIsSecure" class="alert alert-warning" role="alert">
+                <!-- Secure sender (including NHSMail) to insecure recipient, or between any 2 non-NHSMail secure domains -->
+                <div x-show="(fromIsSecure && !toIsSecure) || (notNHSMail && fromIsSecure && toIsSecure)"
+                    class="alert alert-warning" role="alert">
                     <p>
                         Sending from <span x-text="fromDomain"></span> to <span x-text="toDomain"></span>
-                        may not be secure.
+                        may not be encrypted by default.
                     </p>
-                    <p>You <b>must</b> include <tt>[secure]</tt> in your message subject!</p>
+                    <p>You <b>must</b> include <tt>[secure]</tt> in your message subject, or <a
+                            href="https://support.microsoft.com/en-us/office/encrypt-email-messages-373339cb-bf1a-4509-b296-802a39d801dc">use
+                            the Encrypt button in
+                            Outlook.</a></p>
                 </div>
 
                 <!-- Insecure sender to anyone -->
-                <div x-show="!fromIsSecure" class="alert alert-danger" role="alert">
-                    <p>Sending from <span x-text="fromDomain"></span> is insecure.</p>
-                    <p>You must <b>not</b> send sensitive information from this email address!</p>
+                <div x-show="!fromIsSecure || !toIsSecure" class="alert alert-danger" role="alert">
+                    <p>Sending from <span x-text="fromDomain"></span> to <span x-text="toDomain"></span> is insecure by
+                        default.</p>
+                    <p>You should <b>not</b> send sensitive information between these email addresses.</p>
                 </div>
             </div>
         </div>
