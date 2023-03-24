@@ -13,9 +13,7 @@
     const appData = {
         fetchDone: false,
         orgs: {},
-        aliases: {
-            'renalregistry.nhs.uk': 'nbt.nhs.uk'
-        },
+        aliases: {},
         async init() {
             this.orgs = await (await fetch('./orgs.json')).json();
             this.fetchDone = true;
