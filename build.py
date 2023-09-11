@@ -3,7 +3,7 @@ import json
 from contextlib import closing
 import requests
 
-URL = "https://nhs-prod.global.ssl.fastly.net/binaries/content/assets/website-assets/services/nhs-mail/secure-email-standard/dcb1596_accredited_domains.csv"
+URL = "https://digital.nhs.uk/binaries/content/assets/website-assets/services/nhs-mail/secure-email-standard/dcb1596_accredited_domains.csv"
 
 orgs = {}
 
