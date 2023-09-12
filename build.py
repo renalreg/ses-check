@@ -5,17 +5,7 @@ import requests
 
 URL = "https://digital.nhs.uk/binaries/content/assets/website-assets/services/nhs-mail/secure-email-standard/dcb1596_accredited_domains.csv"
 
-# Initialise with known orgs
-orgs = {
-    "ukkidney.org": {
-        "org": "UK Kidney Association",
-        "intl_proc": False,
-        "dmarc": "Reject",
-        "spf": "Hardfail",
-        "dkim": True,
-        "tls12": True,
-    }
-}
+orgs = {}
 
 with closing(requests.get(URL, stream=True)) as r:
     # NOTE: We need to add "ignore" to the decode to avoid exceptions where the file contains non-utf-8 characters
