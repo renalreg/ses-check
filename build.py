@@ -2,6 +2,7 @@ import csv
 import json
 from contextlib import closing
 import requests
+import datetime
 
 URL = "https://digital.nhs.uk/binaries/content/assets/website-assets/services/nhs.net-connect/secure-email-standard/dcb1596_accredited_domains.csv"
 
@@ -28,5 +29,10 @@ with closing(requests.get(URL, stream=True)) as r:
 
         orgs[row[2].strip().lower()] = d
 
+data = {
+    "last_checked": datetime.datetime.now(datetime.timezone.utc).isoformat(),
+    "orgs": orgs
+}
+
 with open("orgs.json", "w", encoding="utf-8") as f:
-    json.dump(orgs, f)
+    json.dump(data, f)

@@ -13,9 +13,12 @@
     const appData = {
         fetchDone: false,
         orgs: {},
+        lastChecked: null,
         aliases: {},
         async init() {
-            this.orgs = await (await fetch('./orgs.json')).json();
+            const data = await (await fetch('./orgs.json')).json();
+            this.orgs = data.orgs;
+            this.lastChecked = data.last_checked;
             this.fetchDone = true;
         },
         toAddress: '',
@@ -44,6 +47,24 @@
         },
         get neitherNHSMail() {
             return !this.fromIsNHSMail && !this.toIsNHSMail
+        },
+        get daysSinceLastChecked() {
+            if (!this.lastChecked) return null;
+            const checked = new Date(this.lastChecked);
+            if (isNaN(checked.getTime())) return null;
+            const now = new Date();
+            const diffMs = now - checked;
+            return Math.floor(diffMs / (1000 * 60 * 60 * 24));
+        },
+        get lastCheckedText() {
+            const days = this.daysSinceLastChecked;
+            if (days === null) return '- unknown';
+            if (days === 0) return 'today';
+            if (days === 1) return 'yesterday';
+            return `${days} days ago`;
+        },
+        get isLastCheckStale() {
+            return (this.daysSinceLastChecked > 14) || (this.daysSinceLastChecked === null);
         }
     }
 </script>
@@ -60,6 +81,9 @@
                     Standard, and may not be accurate.<br>
                     The tool will be updated as our understanding of the standard develops. Full source code is
                     available <a href="https://github.com/renalreg/ses-check">on GitHub.</a></i></p>
+            <p x-show="fetchDone" :class="isLastCheckStale ? 'text-danger' : 'text-body'">Domain list checked
+                <span x-text="lastCheckedText"></span>.
+            </p>
         </div>
 
         <div x-show="!fetchDone" class="text-center">
