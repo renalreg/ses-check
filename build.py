@@ -3,11 +3,12 @@ import json
 from contextlib import closing
 import requests
 
-URL = "https://digital.nhs.uk/binaries/content/assets/website-assets/services/nhs-mail/secure-email-standard/dcb1596_accredited_domains.csv"
+URL = "https://digital.nhs.uk/binaries/content/assets/website-assets/services/nhs.net-connect/secure-email-standard/dcb1596_accredited_domains.csv"
 
 orgs = {}
 
 with closing(requests.get(URL, stream=True)) as r:
+    r.raise_for_status()
     # NOTE: We need to add "ignore" to the decode to avoid exceptions where the file contains non-utf-8 characters
     f = (line.decode("utf-8", "ignore") for line in r.iter_lines())
     reader = csv.reader(f, delimiter=",", quotechar='"')
